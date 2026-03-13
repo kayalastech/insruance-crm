@@ -101,3 +101,16 @@ export function useLead(id: string) {
     enabled: !!user && !!id,
   });
 }
+
+
+export function useDeleteLead() {
+  const { user } = useAuth();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("leads").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["leads"] }),
+  });
+}
